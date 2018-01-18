@@ -8,6 +8,7 @@ var {User} = require('./models/user');
 var app = express();
 
 app.use(bodyParser.json());
+
 app.post('/todos', function(req, res) {
     var todo = new ToDo({
         text: req.body.text
@@ -17,7 +18,14 @@ app.post('/todos', function(req, res) {
     }, function(e){
         res.status(400).send(e);
     });
+});
 
+app.get('/todos', function(req, res) {
+    ToDo.find().then(function(todos){
+    res.send({todos: todos});
+    }, function (e) {
+    res.status(400).send(e);
+    });
 });
 
 app.listen(3000, function() {
