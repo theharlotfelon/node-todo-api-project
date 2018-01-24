@@ -92,6 +92,19 @@ app.listen(port, function () {
     console.log(`Started on port ${port}`);
 });
 
+app.post('/users', function(req, res) {
+    var body = _.pick(req.body, ['email', 'password']);
+    var user = new User(body);
+
+    user.save().then(function () {
+        return user.generateAuthToken();
+    }).then(function (token){
+        res.header('x-auth', token).send(user);
+    }).catch(function (e){
+        res.status(404).send(e);
+    })
+});
+
 module.exports = {
     app: app
 };
