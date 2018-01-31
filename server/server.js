@@ -102,7 +102,7 @@ app.post('/users', function(req, res) {
     }).then(function (token){
         res.header('x-auth', token).send(user);
     }).catch(function (e){
-        res.status(404).send(e);
+        res.status(400).send(e);
     })
 });
 
