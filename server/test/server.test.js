@@ -123,7 +123,7 @@ describe('DELETE /todos:id', function () {
                     return done(err);
                 }
                 ToDo.findById(hexId).then(function (todo) {
-                    expect(todo).toNotExist();
+                    expect(todo).toBeFalsy();
                     done();
                 }).catch(function (e) {
                     done(e);
@@ -141,7 +141,7 @@ describe('DELETE /todos:id', function () {
                     return done(err);
                 }
                 ToDo.findById(hexId).then(function (todo) {
-                    expect(todo).toExist();
+                    expect(todo).toBeTruthy();
                     done();
                 }).catch(function (e) {
                     done(e);
@@ -184,7 +184,8 @@ describe('PATCH /todos/:id', function () {
             .expect(function (res) {
                 expect(res.body.todo.text).toBe(newText);
                 expect(res.body.todo.completed).toBe(true);
-                expect(res.body.todo.completedAt).toBeA('number');
+                //expect(res.body.todo.completedAt).toBeA('number');
+                expect(typeof res.body.todo.completedAt).toBe('number');
                 done();
             }).catch(function (e) {
             done(e);
@@ -223,7 +224,7 @@ describe('PATCH /todos/:id', function () {
             .expect(function (res) {
                 expect(res.body.todo.text).toBe(newText);
                 expect(res.body.todo.completed).toBe(false);
-                expect(res.body.todo.completedAt).toNotExist();
+                expect(res.body.todo.completedAt).toBeFalsy();
                 done();
             }).catch(function (e) {
             done(e);
@@ -268,8 +269,8 @@ describe('POST /users', function () {
             })
             .expect(200)
             .expect(function (res) {
-                expect(res.headers['x-auth']).toExist();
-                expect(res.body._id).toExist();
+                expect(res.headers['x-auth']).toBeTruthy();
+                expect(res.body._id).toBeTruthy();
                 expect(res.body.email).toBe(email);
             })
             .end(function (err) {
@@ -277,8 +278,8 @@ describe('POST /users', function () {
                     return done(err);
                 }
                 User.findOne({email}).then(function (user) {
-                    expect(user).toExist();
-                    expect(user.password).toNotEqual(password);
+                    expect(user).toBeTruthy();
+                    expect(user.password).not.toBe(password);
                     done();
                 });
             });
@@ -315,14 +316,14 @@ describe('POST /users/login', function () {
             })
             .expect(200)
             .expect(function (res) {
-                expect(res.headers['x-auth']).toExist();
+                expect(res.headers['x-auth']).toBeTruthy();
             })
             .end(function (err, res) {
                 if (err) {
                     return done(err);
                 }
                 User.findById(users[1]._id).then(function (user) {
-                    expect(user.tokens[1]).toInclude({
+                    expect(user.toObject().tokens[1]).toMatchObject({
                         access: 'auth',
                         token: res.headers['x-auth']
                     });
@@ -341,7 +342,7 @@ describe('POST /users/login', function () {
             })
             .expect(400)
             .expect(function (res) {
-                expect(res.headers['x-auth']).toNotExist();
+                expect(res.headers['x-auth']).toBeFalsy();
             })
             .end(function (err, res) {
                 if (err) {
